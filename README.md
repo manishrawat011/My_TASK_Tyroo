@@ -125,52 +125,82 @@ o	Check the "Body" ({"message": "Task deleted successfully"}).
 Task 2: Data Processing (Large CSV File Handling)
 
 
-Overview:
-This Python script is designed to perform robust and efficient data processing of a large CSV file, transforming the data according to business requirements, and persisting the results into a relational database. It's built with production-level considerations, focusing on stability, performance, and maintainability.
+Overall Purpose:
 
-Core Functionality:
+This script is designed to automate the process of extracting, transforming, and loading (ETL) data from a local CSV file into a PostgreSQL database. It emphasizes production readiness through robust error handling, efficient processing, and persistent logging.
 
-1.	Data Ingestion and Chunking:
-o	The script reads the CSV file in manageable chunks using Pandas, which is crucial for handling large datasets that exceed available memory. This chunking strategy prevents memory overload and ensures the script can process substantial amounts of data.
+Key Theoretical Concepts:
 
-2.	Data Transformation and Cleaning:
-o	The core of the script lies in its data transformation logic. It handles several critical tasks: 
-	Data Type Conversion: It ensures that numeric columns are correctly converted to numeric types, handling potential errors and inconsistencies.
-	Boolean Conversion: It correctly converts a column into boolean values.
-	Null Value Handling: It addresses missing or null values by filling them with appropriate defaults or removing rows with critical missing information.
-	Data Validation: It performs basic data validation by removing rows that do not contain critical data.
-o	This step is essential for ensuring data quality and consistency before it's stored in the database.
+1. ETL (Extract, Transform, Load):
 
-3.	Database Persistence:
-o	The script utilizes SQLAlchemy, a powerful Python SQL toolkit and ORM, to interact with the database.
-o	It dynamically creates the database table schema based on the CSV file's structure, ensuring flexibility and adaptability.
-o	The transformed data is then efficiently inserted into the database in chunks, leveraging SQLAlchemy's capabilities for optimized database operations.
-o	The use of a primary key ensures data integrity.
-o	The use of database sessions and transactions ensures that database operations are atomic, preventing partial data writes in case of errors.
+Extract: The script extracts data from a CSV file.
+Transform: It cleans and transforms the data (numeric conversions, boolean conversions, null handling, data validation).
+Load: It loads the transformed data into a PostgreSQL database.
 
-4.	Error Handling and Logging:
-o	Robust error handling is implemented throughout the script, using try-except blocks to catch and manage potential exceptions.
-o	Comprehensive logging is employed to record events, errors, and performance metrics, providing valuable insights for monitoring and debugging.
-o	Logging to a file ensures that information is preserved even after the script finishes execution.
-o	The use of logging.exception ensures that full stack traces are captured, greatly aiding in debugging.
+2. Chunking for Memory Management:
 
+The script processes the CSV file in chunks. This is a crucial strategy for handling large datasets that might exceed the available RAM. By processing data in smaller, manageable portions, the script avoids memory overload and ensures it can handle very large files.
 
-5.	Performance Optimization:
-o	Chunking is the primary performance optimization technique, allowing the script to handle large datasets efficiently.
-o	Pandas' vectorized operations are used for data transformation, leveraging the library's optimized data processing capabilities.
-o	Database operations are optimized through the use of sqlalchemy.
+3. Data Transformation and Cleaning Principles:
 
+The script applies a series of transformations to ensure data quality and consistency.
+Data Type Enforcement: It enforces correct data types for numeric and boolean columns. This is essential for accurate analysis and database operations.
+Null Value Handling: It addresses missing data by filling null values with appropriate defaults or removing incomplete records. This prevents errors and ensures data completeness.
+Data Validation: The script performs basic data validation by removing rows with critical missing information.
+These transformations are vital for producing reliable and consistent data.
 
-6.	Production Readiness:
-o	The script is designed with production considerations in mind, including: 
-	File-based logging for persistent records.
-	Robust error handling and logging for debugging.
-	Clear and concise code for maintainability.
-	Input file validation.
+4. Relational Database Integration (SQLAlchemy):
+
+The script uses SQLAlchemy, an ORM (Object-Relational Mapper), to interact with the PostgreSQL database.
+ORM Abstraction: SQLAlchemy abstracts away the complexities of direct SQL queries, allowing the script to interact with the database using Python objects and methods.
+Schema Definition: The script defines the database table schema programmatically, ensuring that the database structure matches the data being loaded.
+Database Sessions and Transactions: SQLAlchemy's session management ensures that database operations are performed within transactions. This guarantees data integrity by ensuring that either all operations within a transaction succeed or none do.
+
+5. Production-Level Logging:
+
+The script uses the Python logging module to record events and errors.
+File-Based Logging: Logs are written to a file, providing a persistent record of the script's execution. This is essential for monitoring and debugging in production environments.
+Detailed Logging: The script logs various events, including data processing progress, errors, and exceptions. This provides valuable insights for troubleshooting and performance analysis.
+
+6. Exception Logging: The use of logging.exception to log full stack traces is very important.
+
+7. Error Handling and Robustness:
+
+The script incorporates robust error handling using try-except blocks.
+File Existence Check: It verifies that the input CSV file exists before attempting to process it.
+Data Transformation Error Handling: It handles potential errors during data transformation, such as missing columns or invalid data types.
+Database Error Handling: It handles potential errors during database operations, such as connection issues or data insertion failures.
+
+8. Transaction Rollback: If a database error occurs, the script rolls back the transaction, preventing partial data writes.
+
+9. Performance Considerations:
+Chunking: The use of pandas chunking is the largest performance consideration.
+SQLAlchemy Efficiency: SQLAlchemy provides efficient mechanisms for database interaction.
+Data Type Optimization: Choosing appropriate data types for database columns optimizes storage and query performance.
 
 Technology Choices:
 •	Pandas: Chosen for its powerful data manipulation capabilities and efficiency in handling tabular data.
 •	SQLAlchemy: Selected for its flexibility, performance, and robust database interaction features.
 •	Python 3.8+: The chosen Python version provides access to modern language features and libraries.
+
+
+
+#####  Key parts to change for your PostgreSQL setup:
+
+db_uri:
+
+1. Replace "postgresql://user:password@host:port/database" with your actual PostgreSQL connection string.
+   Example: "postgresql://myuser:mypassword@localhost:5432/mydatabase"
+2. Make sure you have the psycopg2-binary package installed: pip install psycopg2-binary
+3. Database Credentials:   Ensure that the user, password, host, port, and database name in the db_uri are correct.
+                    The user must have the necessary permissions to create tables and insert data into the database.
+4.Database Existence:The database that you are connecting to must already exist. This code will not create a database. It will only create the table within the database.
+
+How to run:
+
+1. Install psycopg2-binary: pip install psycopg2-binary
+2. Update db_uri: Modify the db_uri in the script with your PostgreSQL connection details.
+3. Run the script: python Task_2.py
+4. Verify the data: Use a PostgreSQL client (e.g., psql, pgAdmin) to check the processed_data table in your database.
 
 
