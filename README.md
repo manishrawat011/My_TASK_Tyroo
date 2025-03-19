@@ -115,7 +115,7 @@ o	Check the "Body" ({"message": "Task deleted successfully"}).
 
 8. Get Tasks with Pagination: 
 •	Method: GET
-•	URL: http://127.0.0.1:8010/tasks?page=2&per_page=5 (or any combination of page and per_page)
+•	URL: http://127.0.0.1:5000/tasks?page=2&per_page=5 (or any combination of page and per_page)
 •	Headers: Include your Authorization header with the JWT token.
 •	Send: Click "Send".
 
